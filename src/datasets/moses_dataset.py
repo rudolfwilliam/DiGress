@@ -276,3 +276,4 @@ def get_train_smiles(cfg, datamodule, dataset_infos, evaluate_dataset=False):
 if __name__ == "__main__":
     ds = [MOSESDataset(s, os.path.join(os.path.abspath(__file__), "../../../data/moses"),
                        preprocess=True) for s in ["train", "val", "test"]]
+    

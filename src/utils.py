@@ -123,13 +123,14 @@ class EMA(pl.Callback):
     @overrides
     def on_save_checkpoint(
             self, trainer: "pl.Trainer", pl_module: "pl.LightningModule", checkpoint: Dict
-    ) -> dict:
-        return {"ema_state_dict": self.ema_state_dict, "_ema_state_dict_ready": self._ema_state_dict_ready}
+    ) -> None:
+        #return {"ema_state_dict": self.ema_state_dict, "_ema_state_dict_ready": self._ema_state_dict_ready}
+        return None
 
-    @overrides
-    def on_load_checkpoint(self, trainer: "pl.Trainer", pl_module: "pl.LightningModule", callback_state: Dict):
-        self._ema_state_dict_ready = callback_state["_ema_state_dict_ready"]
-        self.ema_state_dict = callback_state["ema_state_dict"]
+    #@overrides
+    #def on_load_checkpoint(self, trainer: "pl.Trainer", pl_module: "pl.LightningModule", callback_state: Dict):
+    #    self._ema_state_dict_ready = callback_state["_ema_state_dict_ready"]
+    #    self.ema_state_dict = callback_state["ema_state_dict"]
 
 
 def normalize(X, E, y, norm_values, norm_biases, node_mask):
@@ -238,5 +239,3 @@ class PlaceHolder:
             self.E = self.E * e_mask1 * e_mask2
             assert torch.allclose(self.E, torch.transpose(self.E, 1, 2))
         return self
-
-

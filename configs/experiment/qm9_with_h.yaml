@@ -5,7 +5,8 @@ general:
     wandb: 'online'
 train:
     n_epochs: 2000
-    batch_size: 512
+    #batch_size: 512
+    batch_size: 64
     save_model: True
 model:
     n_layers: 7

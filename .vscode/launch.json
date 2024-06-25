@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "train regressor",
+            "type": "debugpy",
+            "request": "launch",
+            "cwd": "/home/kkladny/conformal_prediction_generative_models/DiGress/src",
+            "python": "/home/kkladny/anaconda3/envs/digress/bin/python",
+            "program": "/home/kkladny/conformal_prediction_generative_models/DiGress/src/guidance/train_qm9_regressor.py",
+            "args": ["+experiment=regressor_model.yaml"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "train generative model",
+            "type": "debugpy",
+            "request": "launch",
+            "cwd": "/home/kkladny/conformal_prediction_generative_models/DiGress/src",
+            "python": "/home/kkladny/anaconda3/envs/digress/bin/python",
+            "program": "/home/kkladny/conformal_prediction_generative_models/DiGress/src/main.py",
+            "args": ["+experiment=test.yaml"],
+            "console": "integratedTerminal"
+        }
+    ]
+}

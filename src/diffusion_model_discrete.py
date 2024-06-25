@@ -157,7 +157,7 @@ class DiscreteDenoisingDiffusion(pl.LightningModule):
         nll = self.compute_val_loss(pred, noisy_data, dense_data.X, dense_data.E, data.y,  node_mask, test=False)
         return {'loss': nll}
 
-    def validation_epoch_end(self, outs) -> None:
+    def on_validation_epoch_end(self) -> None:
         metrics = [self.val_nll.compute(), self.val_X_kl.compute(), self.val_E_kl.compute(),
                    self.val_y_kl.compute(), self.val_X_logp.compute(), self.val_E_logp.compute(),
                    self.val_y_logp.compute()]
@@ -227,7 +227,7 @@ class DiscreteDenoisingDiffusion(pl.LightningModule):
         nll = self.compute_val_loss(pred, noisy_data, dense_data.X, dense_data.E, data.y, node_mask, test=True)
         return {'loss': nll}
 
-    def test_epoch_end(self, outs) -> None:
+    def on_test_epoch_end(self) -> None:
         """ Measure likelihood on a test set and compute stability metrics. """
         metrics = [self.test_nll.compute(), self.test_X_kl.compute(), self.test_E_kl.compute(),
                    self.test_y_kl.compute(), self.test_X_logp.compute(), self.test_E_logp.compute(),
@@ -449,6 +449,7 @@ class DiscreteDenoisingDiffusion(pl.LightningModule):
 
         # Combine terms
         nlls = - log_pN + kl_prior + loss_all_t - loss_term_0
+        #nlls = - log_pN + loss_all_t - loss_term_0
         assert len(nlls.shape) == 1, f'{nlls.shape} has more than only batch dim.'
 
         # Update NLL metric object and return batch nll

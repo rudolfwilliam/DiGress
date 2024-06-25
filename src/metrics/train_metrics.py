@@ -123,6 +123,3 @@ class TrainLossDiscrete(nn.Module):
 
         print(f"Epoch {current_epoch} finished: X: {epoch_node_loss :.2f} -- E: {epoch_edge_loss :.2f} "
               f"y: {epoch_y_loss :.2f} -- {time.time() - start_epoch_time:.1f}s ")
-
-
-

@@ -177,7 +177,7 @@ class Qm9RegressorDiscrete(pl.LightningModule):
         # self.log('val_loss', mae, prog_bar=True, on_step=False, on_epoch=True)
         return {'val_loss': mae}
 
-    def validation_epoch_end(self, outs) -> None:
+    def on_validation_epoch_end(self) -> None:
         val_mae = self.val_loss.compute()
         to_log = {"val/epoch_mae": val_mae}
         print(f"Epoch {self.current_epoch}: val_mae: {val_mae :.3f}")

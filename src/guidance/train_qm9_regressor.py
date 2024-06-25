@@ -86,6 +86,7 @@ def main(cfg: DictConfig):
         print("[WARNING]: Run is called 'debug' -- it will run with fast_dev_run. ")
     trainer = Trainer(gradient_clip_val=cfg.train.clip_grad,
                       accelerator='gpu' if cfg.general.gpus > 0 and torch.cuda.is_available() else 'cpu',
+                      #accelerator='cpu',
                       devices=1 if cfg.general.gpus > 0 and torch.cuda.is_available() else None,
                       limit_train_batches=20,     # TODO: remove
                       limit_val_batches=20 if name == 'test' else None,
