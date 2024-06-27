@@ -167,7 +167,7 @@ class MOSESDataModule(MolecularDataModule):
         self.datadir = cfg.dataset.datadir
         self.train_smiles = []
         self.preprocess = preprocess
-        self.prepare_data()
+        #self.prepare_data()
 
     def prepare_data(self) -> None:
         base_path = pathlib.Path(os.path.realpath(__file__)).parents[2]
@@ -180,7 +180,7 @@ class MOSESDataModule(MolecularDataModule):
 
 
 class MOSESinfos(AbstractDatasetInfos):
-    def __init__(self, datamodule, cfg, recompute_statistics=False, meta=None):
+    def __init__(self, datamodule, cfg=None, recompute_statistics=False, meta=None):
         self.name = 'MOSES'
         self.input_dims = None
         self.output_dims = None

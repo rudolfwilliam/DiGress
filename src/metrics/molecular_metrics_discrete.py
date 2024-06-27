@@ -44,8 +44,9 @@ class HydrogenCE(CEPerClass):
 
 
 class CarbonCE(CEPerClass):
-    def __init__(self, i):
-        super().__init__(i)
+    def __init__(self, i, **kwargs):
+        super().__init__(i, **kwargs)
+        self._dtype_convert = False
 
 
 class NitroCE(CEPerClass):

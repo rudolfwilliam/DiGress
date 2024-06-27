@@ -469,6 +469,11 @@ class DiscreteDenoisingDiffusion(pl.LightningModule):
         return self.model(X, E, y, node_mask)
 
     @torch.no_grad()
+    def sample_single(self, num_nodes=None):
+        return self.sample_batch(batch_id=0, batch_size=1, num_nodes=num_nodes, save_final=1, keep_chain=1,
+                                 number_chain_steps=0)[0]
+
+    @torch.no_grad()
     def sample_batch(self, batch_id: int, batch_size: int, keep_chain: int, number_chain_steps: int,
                      save_final: int, num_nodes=None):
         """
@@ -526,10 +531,8 @@ class DiscreteDenoisingDiffusion(pl.LightningModule):
         sampled_s = sampled_s.mask(node_mask, collapse=True)
         X, E, y = sampled_s.X, sampled_s.E, sampled_s.y
 
-
-
         # Prepare the chain for saving
-        if keep_chain > 0:
+        """if keep_chain > 0:
             final_X_chain = X[:keep_chain]
             final_E_chain = E[:keep_chain]
 
@@ -542,7 +545,7 @@ class DiscreteDenoisingDiffusion(pl.LightningModule):
             # Repeat last frame to see final sample better
             chain_X = torch.cat([chain_X, chain_X[-1:].repeat(10, 1, 1)], dim=0)
             chain_E = torch.cat([chain_E, chain_E[-1:].repeat(10, 1, 1, 1)], dim=0)
-            assert chain_X.size(0) == (number_chain_steps + 10)
+            assert chain_X.size(0) == (number_chain_steps + 10)"""
 
         molecule_list = []
         for i in range(batch_size):
@@ -550,11 +553,11 @@ class DiscreteDenoisingDiffusion(pl.LightningModule):
             atom_types = X[i, :n].cpu()
             edge_types = E[i, :n, :n].cpu()
             molecule_list.append([atom_types, edge_types])
-            if i < 3:
-                print("Example of generated E: ", atom_types)
-                print("Example of generated X: ", edge_types)
+            #if i < 3:
+            #    print("Example of generated E: ", atom_types)
+            #    print("Example of generated X: ", edge_types)
 
-        predicted_graph_list = []
+        """predicted_graph_list = []
         for i in range(batch_size):
             n = n_nodes[i]
             atom_types = X[i, :n].cpu()
@@ -585,7 +588,7 @@ class DiscreteDenoisingDiffusion(pl.LightningModule):
                                        f'graphs/{self.name}/epoch{self.current_epoch}_b{batch_id}/')
             self.visualization_tools.visualize(result_path, molecule_list, save_final)
             self.visualization_tools.visualize(result_path, predicted_graph_list, save_final, log='predicted')
-            print("Done.")
+            print("Done.")"""
 
         return molecule_list
 
