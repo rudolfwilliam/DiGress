@@ -475,7 +475,7 @@ class DiscreteDenoisingDiffusion(pl.LightningModule):
 
     @torch.no_grad()
     def sample_batch(self, batch_id: int, batch_size: int, keep_chain: int, number_chain_steps: int,
-                     save_final: int, num_nodes=None):
+                     save_final: int, num_nodes=None, scaffold_mask=None):
         """
         :param batch_id: int
         :param batch_size: int
@@ -483,8 +483,14 @@ class DiscreteDenoisingDiffusion(pl.LightningModule):
         :param save_final: int: number of predictions to save to file
         :param keep_chain: int: number of chains to save to file
         :param keep_chain_steps: number of timesteps to save for each chain
+        :scaffold_mask: tuple of tensors (X, E) of size (n), (n, n) (optional)
         :return: molecule_list. Each element of this list is a tuple (atom_types, charges, positions)
         """
+        # convert scaffold mask to one-hot
+        if scaffold_mask is not None:
+            assert (scaffold_mask[0].shape[0] == scaffold_mask[1].shape[0])
+            X_scaff_mask = F.one_hot(scaffold_mask[0], num_classes=self.Xdim_output).float()
+            E_scaff_mask = F.one_hot(scaffold_mask[1], num_classes=self.Edim_output).float()
         if num_nodes is None:
             n_nodes = self.node_dist.sample_n(batch_size, self.device)
         elif type(num_nodes) == int:
@@ -501,7 +507,10 @@ class DiscreteDenoisingDiffusion(pl.LightningModule):
         # Sample noise  -- z has size (n_samples, n_nodes, n_features)
         z_T = diffusion_utils.sample_discrete_feature_noise(limit_dist=self.limit_dist, node_mask=node_mask)
         X, E, y = z_T.X, z_T.E, z_T.y
-
+        if scaffold_mask is not None:
+            X[:, :scaffold_mask[0].shape[0], :] = X_scaff_mask
+            E[:, :scaffold_mask[1].shape[0], :scaffold_mask[1].shape[1], :] = E_scaff_mask
+            
         assert (E == torch.transpose(E, 1, 2)).all()
         assert number_chain_steps < self.T
         chain_X_size = torch.Size((number_chain_steps, keep_chain, X.size(1)))
@@ -521,11 +530,14 @@ class DiscreteDenoisingDiffusion(pl.LightningModule):
             sampled_s, discrete_sampled_s, predicted_graph = self.sample_p_zs_given_zt(t_norm, X, E, y, node_mask,
                                                                                        last_step=s_int == 100)
             X, E, y = sampled_s.X, sampled_s.E, sampled_s.y
+            if scaffold_mask is not None:
+                X[:, :scaffold_mask[0].shape[0], :] = X_scaff_mask
+                E[:, :scaffold_mask[1].shape[0], :scaffold_mask[1].shape[1], :] = E_scaff_mask
 
             # Save the first keep_chain graphs
-            write_index = (s_int * number_chain_steps) // self.T
-            chain_X[write_index] = discrete_sampled_s.X[:keep_chain]
-            chain_E[write_index] = discrete_sampled_s.E[:keep_chain]
+            #write_index = (s_int * number_chain_steps) // self.T
+            #chain_X[write_index] = discrete_sampled_s.X[:keep_chain]
+            #chain_E[write_index] = discrete_sampled_s.E[:keep_chain]
 
         # Sample
         sampled_s = sampled_s.mask(node_mask, collapse=True)
