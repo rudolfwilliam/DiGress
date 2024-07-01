@@ -23,6 +23,26 @@
             "program": "/home/kkladny/conformal_prediction_generative_models/DiGress/src/main.py",
             "args": ["+experiment=test.yaml"],
             "console": "integratedTerminal"
+        },
+        {
+            "name" : "load moses model",
+            "type" : "debugpy",
+            "request" : "launch",
+            "cwd" : "/home/kkladny/conformal_prediction_generative_models/DiGress/src",
+            "python" : "/home/kkladny/anaconda3/envs/digress/bin/python",
+            "program" : "/home/kkladny/conformal_prediction_generative_models/DiGress/src/load_moses_model.py",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name" : "compute sample hist",
+            "type" : "debugpy",
+            "request" : "launch",
+            "cwd" : "/home/kkladny/conformal_prediction_generative_models/DiGress/src",
+            "python" : "/home/kkladny/anaconda3/envs/digress/bin/python",
+            "program" : "/home/kkladny/conformal_prediction_generative_models/DiGress/src/compute_sample_hist.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
 }
