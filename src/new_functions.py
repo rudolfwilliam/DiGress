@@ -56,6 +56,32 @@ def mol_to_data(mol):
 
     return X, E
 
+def generate_fragment(mol):
+    from random import choice
+    atom_count = mol.GetNumAtoms()
+    # convert to graph representation
+    mol_data = mol_to_data(mol)
+    # remove one arbitrary atom from the molecule that results in a valid molecule
+    valid = False
+    excl = []
+    while not valid:
+        idxs = [i for i in range(0, atom_count) if i not in excl]
+        if len(idxs) == 0:
+            break
+        idx = choice(idxs)
+        # Remove the ith row
+        X_mod = torch.cat((mol_data[0][:, :idx], mol_data[0][:, idx+1:]), dim=1)
+        E_mod = torch.cat((mol_data[1][:, :idx, :], mol_data[1][:, idx+1:, :]), dim=1)
+        # Remove the ith column
+        E_mod = torch.cat((E_mod[:, :, :idx], E_mod[:, :, idx+1:]), dim=2)
+        mol_data_cropped = (X_mod[0, ...], E_mod[0, ...])
+        mol_cropped = clean_and_convert_samples([mol_data_cropped])
+        if len(mol_cropped) == 0:
+            excl.append(idx)
+            continue
+        else:
+            valid = True
+    return mol_cropped
 
 def clean_and_convert_samples(samples):
     from datasets.moses_dataset import MOSESinfos, MOSESDataModule
